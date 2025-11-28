@@ -143,37 +143,36 @@ This will:
 
 **Options:**
 
-- `--zip-path PATH`
-  Path to the Kaggle zip file
+- `--zip-path PATH`  
+  Path to the Kaggle zip file  
   *Default*: `data/raw/fruit_ripeness.zip`
 
-- `--output-root PATH`
-  Root directory for processed splits
+- `--output-root PATH`  
+  Root directory for processed splits  
   *Default*: `data/processed`
 
-- `--train-ratio FLOAT`
-  Train split ratio (e.g., `0.75`)
+- `--train-ratio FLOAT`  
+  Train split ratio (e.g., `0.75`)  
   *Default*: `0.7`
 
-- `--val-ratio FLOAT`
-  Validation split ratio (e.g., `0.15`)
-  Test split is computed as `1 - train_ratio - val_ratio`.
+- `--val-ratio FLOAT`  
+  Validation split ratio (e.g., `0.15`)  
+  Test split is computed as `1 - train_ratio - val_ratio`.  
   *Default*: `0.15`
 
-- `--seed INT`
-  Random seed for splitting
+- `--seed INT`  
+  Random seed for splitting  
   *Default*: `42`
 
-- `--run-fix-names`
-  If provided, runs the whitespace-fix bash script after unzipping
+- `--run-fix-names`  
+  If provided, runs the whitespace-fix bash script after unzipping  
   (Default script path: `bash_scripts/fix_whitespace_filenames.sh`)
 
-- `--fix-names-script PATH`
+- `--fix-names-script PATH`  
   Custom path to the bash script that fixes filenames
 
-- `--overwrite`
+- `--overwrite`  
   If provided, removes existing extracted/split directories before recreating them
-
 
 ### 4. Inspect dataset
 
@@ -202,7 +201,18 @@ This trains a CNN and saves artifacts under `runs/exp_baseline/`.
 poetry run eval-test
 ```
 
-This loads the trained model (by default, for `exp_baseline`) and evaluates it on the test set, printing a classification report and saving the confusion matrix.
+By default this evaluates the `exp_baseline` experiment (see options below).  
+It loads the trained model checkpoint and evaluates it on the test set, printing a classification report and saving the confusion matrix and class names.
+
+Examples:
+
+```bash
+# Evaluate baseline experiment (default)
+poetry run eval-test
+
+# Evaluate another experiment, e.g. 'exp2'
+poetry run eval-test --experiment-name exp2
+```
 
 ### 7. (Optional) Run the hard-coded baseline experiment wrapper
 
@@ -250,6 +260,7 @@ The main flexible entrypoint for training is:
 ```bash
 poetry run train
 ```
+
 This uses `TrainingConfig` (from `fruit_ripeness_dl.config`) and the `run_experiment` function under the hood.
 
 ### Training options
@@ -259,29 +270,32 @@ You can customize training via CLI arguments:
 ```bash
 poetry run train   --experiment-name exp_baseline   --learning-rate 1e-3   --num-epochs 10   --batch-size 32   --device cuda
 ```
+
 Supported arguments:
 
-- `--experiment-name, -e`
+- `--experiment-name, -e`  
   Name of the experiment (used to create `runs/<experiment_name>/`)
 
-- `--learning-rate, --lr, -l`
-  Learning rate
+- `--learning-rate, --lr, -l`  
+  Learning rate  
   *Default*: `1e-3`
 
-- `--num-epochs, -n`
-  Number of training epochs
+- `--num-epochs, -n`  
+  Number of training epochs  
   *Default*: `10`
 
-- `--batch-size, -b`
-  Override batch size
+- `--batch-size, -b`  
+  Override batch size  
   *(If omitted, the default from `TrainingConfig` is used.)*
 
-- `--device, -d`
+- `--device, -d`  
   Device for training, e.g.:
   - `cuda` (GPU)
   - `cuda:0`
-  - `cpu`
+  - `cpu`  
   *(If omitted, the value from `TrainingConfig` is used.)*
+
+---
 
 ## Where training artifacts are stored
 
@@ -304,10 +318,16 @@ runs/
 
 ## Evaluating on the test set
 
-Once you have trained a model (e.g., `exp_baseline`), you can evaluate it on the test set with:
+Once you have trained a model (e.g., `exp_baseline` or `exp2`), you can evaluate it on the test set with:
 
 ```bash
 poetry run eval-test
+```
+
+or explicitly:
+
+```bash
+poetry run eval-test --experiment-name exp2
 ```
 
 This script:
@@ -324,21 +344,22 @@ This script:
    - `confusion_matrix.npy` in `runs/<experiment_name>/`
    - `class_names.txt` in `runs/<experiment_name>/`
 
-By default, the script uses:
+### Eval-test options
 
-```python
-cfg = TrainingConfig(
-    experiment_name="exp_baseline",
-)
+```bash
+poetry run eval-test --experiment-name exp2
 ```
 
-So it expects:
+Supported arguments:
 
-```text
-runs/exp_baseline/model_final.pth
-```
+- `--experiment-name, -e`  
+  Name of the experiment to evaluate.  
+  *Default*: `exp_baseline`  
 
-If you train with a different `--experiment-name`, you should adjust the `experiment_name` in `evaluate_test.py` (or extend it to accept a `--experiment-name` argument).
+This determines which subfolder under `runs/` is used and which `model_final.pth` is loaded, for example:
+
+- `runs/exp_baseline/model_final.pth`
+- `runs/exp2/model_final.pth`
 
 ---
 
@@ -397,7 +418,7 @@ This helps you quickly validate:
 
 ## Troubleshooting
 
-- **`ModuleNotFoundError: fruit_ripeness_dl`**
+- **`ModuleNotFoundError: fruit_ripeness_dl`**  
   Make sure you are:
   - In the project root, and
   - Running commands via Poetry, e.g.:
@@ -406,7 +427,7 @@ This helps you quickly validate:
   poetry run data-summary
   ```
 
-- **Zip file not found when running `model-split`**
+- **Zip file not found when running `model-split`**  
   Check that:
 
   ```text
@@ -419,7 +440,7 @@ This helps you quickly validate:
   poetry run model-split --zip-path path/to/your.zip
   ```
 
-- **CUDA not being used**
+- **CUDA not being used**  
   Check:
 
   ```bash
