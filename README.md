@@ -300,6 +300,7 @@ runs/
 - `confusion_matrix.npy` – NumPy array of the confusion matrix (saved by `eval-test`).
 - `class_names.txt` – list of class names used in the model (saved by `eval-test`).
 
+---
 
 ## Evaluating on the test set
 
@@ -339,6 +340,7 @@ runs/exp_baseline/model_final.pth
 
 If you train with a different `--experiment-name`, you should adjust the `experiment_name` in `evaluate_test.py` (or extend it to accept a `--experiment-name` argument).
 
+---
 
 ## Dataset summary / sanity check
 
