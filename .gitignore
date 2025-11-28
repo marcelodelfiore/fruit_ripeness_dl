@@ -1,0 +1,55 @@
+# -------------------------
+# Python / Poetry
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.log
+
+# Poetry virtualenv
+.venv/
+
+# Bytecode cache
+*.pyc
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# -------------------------
+# IDE / Editors
+# -------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# -------------------------
+# Environment / secrets
+# -------------------------
+.env
+.env.*
+*.env
+
+# -------------------------
+# Project-specific
+# -------------------------
+
+# Big data folders (Kaggle dataset, processed splits)
+data/raw/
+data/processed/
+
+# Training runs (models, histories, confusion matrices, etc.)
+runs/
+
+# If you add any local temp folders
+tmp/

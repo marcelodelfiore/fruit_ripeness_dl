@@ -1,0 +1,46 @@
+[project]
+name = "fruit-ripeness-dl"
+version = "0.1.0"
+description = "CNN for fruit ripeness classification (22 classes) using PyTorch"
+authors = [
+    { name = "Marcelo Del Fiore", email = "marcelodelfiore@gmail.com" }
+]
+readme = "README.md"
+
+# Python 3.12 to keep compatibility with Pytorch
+requires-python = ">=3.12,<3.13"
+
+dependencies = [
+    "torch>=2.3.0,<3.0.0",
+    "torchvision>=0.18.0,<1.0.0",
+    "matplotlib>=3.9.0,<4.0.0",
+    "pandas>=2.2.0,<3.0.0",
+    "scikit-learn>=1.5.0,<2.0.0",
+    "jupyter>=1.0.0,<2.0.0",
+    "ipykernel>=6.29.0,<7.0.0",
+]
+
+[tool.poetry]
+packages = [{ include = "fruit_ripeness_dl", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+ruff = "^0.6.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-select = ["I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["fruit_ripeness_dl"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-q"
+testpaths = ["tests"]
