@@ -46,6 +46,14 @@ def _parse_args() -> argparse.Namespace:
         help="Override device (e.g. 'cuda', 'cpu'). If not set, uses TrainingConfig default.",
     )
 
+
+    parser.add_argument(
+        "--optimizer",
+        "-o",
+        default=None,
+        help="Override optimizer (e.g. 'adam', 'sgd'). If not set, uses TrainingConfig default.",
+    )
+
     return parser.parse_args()
 
 
@@ -57,6 +65,7 @@ def main() -> None:
         experiment_name=args.experiment_name,
         learning_rate=args.learning_rate,
         num_epochs=args.num_epochs,
+        optimizer=args.optimizer
     )
 
     if args.batch_size is not None:
@@ -73,6 +82,8 @@ def main() -> None:
         print(f"  batch_size:      {getattr(cfg, 'batch_size')}")
     if hasattr(cfg, "device"):
         print(f"  device:          {getattr(cfg, 'device')}")
+    if hasattr(cfg, "optimizer"):
+        print(f"  optimizer:       {getattr(cfg, 'optimizer')}")
     print("==============================")
 
     _run_experiment(cfg)
