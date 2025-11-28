@@ -129,11 +129,51 @@ data/raw/fruit_ripeness.zip
 poetry run model-split --run-fix-names --overwrite
 ```
 
+- Uses split ratios:
+  - `train`: 0.70
+  - `val`: 0.15
+  - `test`: 0.15
+- Uses random seed `42` for reproducible splits
+
 This will:
 
 - Unzip `data/raw/fruit_ripeness.zip`
 - Optionally fix whitespace in filenames using your bash script (because of `--run-fix-names`)
 - Create `train`, `val`, and `test` splits under `data/processed/`
+
+**Options:**
+
+- `--zip-path PATH`
+  Path to the Kaggle zip file
+  *Default*: `data/raw/fruit_ripeness.zip`
+
+- `--output-root PATH`
+  Root directory for processed splits
+  *Default*: `data/processed`
+
+- `--train-ratio FLOAT`
+  Train split ratio (e.g., `0.75`)
+  *Default*: `0.7`
+
+- `--val-ratio FLOAT`
+  Validation split ratio (e.g., `0.15`)
+  Test split is computed as `1 - train_ratio - val_ratio`.
+  *Default*: `0.15`
+
+- `--seed INT`
+  Random seed for splitting
+  *Default*: `42`
+
+- `--run-fix-names`
+  If provided, runs the whitespace-fix bash script after unzipping
+  (Default script path: `bash_scripts/fix_whitespace_filenames.sh`)
+
+- `--fix-names-script PATH`
+  Custom path to the bash script that fixes filenames
+
+- `--overwrite`
+  If provided, removes existing extracted/split directories before recreating them
+
 
 ### 4. Inspect dataset
 
@@ -195,50 +235,11 @@ By default, it:
     test/<class_name>/...
   ```
 
-- Uses split ratios:
-  - `train`: 0.70
-  - `val`: 0.15
-  - `test`: 0.15
-- Uses random seed `42` for reproducible splits
-
 ### Model split – full example with options
 
 ```bash
 poetry run model-split   --zip-path data/raw/fruit_ripeness.zip   --output-root data/processed   --train-ratio 0.75   --val-ratio 0.15   --seed 123   --run-fix-names   --overwrite
 ```
-
-**Options:**
-
-- `--zip-path PATH`  
-  Path to the Kaggle zip file  
-  *Default*: `data/raw/fruit_ripeness.zip`
-
-- `--output-root PATH`  
-  Root directory for processed splits  
-  *Default*: `data/processed`
-
-- `--train-ratio FLOAT`  
-  Train split ratio (e.g., `0.75`)  
-  *Default*: `0.7`
-
-- `--val-ratio FLOAT`  
-  Validation split ratio (e.g., `0.15`)  
-  Test split is computed as `1 - train_ratio - val_ratio`.  
-  *Default*: `0.15`
-
-- `--seed INT`  
-  Random seed for splitting  
-  *Default*: `42`
-
-- `--run-fix-names`  
-  If provided, runs the whitespace-fix bash script after unzipping  
-  (Default script path: `bash_scripts/fix_whitespace_filenames.sh`)
-
-- `--fix-names-script PATH`  
-  Custom path to the bash script that fixes filenames
-
-- `--overwrite`  
-  If provided, removes existing extracted/split directories before recreating them
 
 ---
 
@@ -249,7 +250,6 @@ The main flexible entrypoint for training is:
 ```bash
 poetry run train
 ```
-
 This uses `TrainingConfig` (from `fruit_ripeness_dl.config`) and the `run_experiment` function under the hood.
 
 ### Training options
@@ -259,32 +259,29 @@ You can customize training via CLI arguments:
 ```bash
 poetry run train   --experiment-name exp_baseline   --learning-rate 1e-3   --num-epochs 10   --batch-size 32   --device cuda
 ```
-
 Supported arguments:
 
-- `--experiment-name, -e`  
+- `--experiment-name, -e`
   Name of the experiment (used to create `runs/<experiment_name>/`)
 
-- `--learning-rate, --lr, -l`  
-  Learning rate  
+- `--learning-rate, --lr, -l`
+  Learning rate
   *Default*: `1e-3`
 
-- `--num-epochs, -n`  
-  Number of training epochs  
+- `--num-epochs, -n`
+  Number of training epochs
   *Default*: `10`
 
-- `--batch-size, -b`  
-  Override batch size  
+- `--batch-size, -b`
+  Override batch size
   *(If omitted, the default from `TrainingConfig` is used.)*
 
-- `--device, -d`  
+- `--device, -d`
   Device for training, e.g.:
   - `cuda` (GPU)
   - `cuda:0`
-  - `cpu`  
+  - `cpu`
   *(If omitted, the value from `TrainingConfig` is used.)*
-
----
 
 ## Where training artifacts are stored
 
@@ -303,30 +300,6 @@ runs/
 - `confusion_matrix.npy` – NumPy array of the confusion matrix (saved by `eval-test`).
 - `class_names.txt` – list of class names used in the model (saved by `eval-test`).
 
----
-
-## Running experiments (simple wrapper)
-
-In addition to the flexible `train` command, there is a convenience command:
-
-```bash
-poetry run run-experiment
-```
-
-This calls `run_experiment` with a hardcoded `TrainingConfig`, typically something like:
-
-```python
-cfg = TrainingConfig(
-    experiment_name="exp_baseline",
-    learning_rate=1e-3,
-    num_epochs=10,
-)
-run_experiment(cfg)
-```
-
-Use this when you just want to re-run the baseline experiment with its default settings, without passing CLI arguments.
-
----
 
 ## Evaluating on the test set
 
@@ -366,7 +339,6 @@ runs/exp_baseline/model_final.pth
 
 If you train with a different `--experiment-name`, you should adjust the `experiment_name` in `evaluate_test.py` (or extend it to accept a `--experiment-name` argument).
 
----
 
 ## Dataset summary / sanity check
 
@@ -423,7 +395,7 @@ This helps you quickly validate:
 
 ## Troubleshooting
 
-- **`ModuleNotFoundError: fruit_ripeness_dl`**  
+- **`ModuleNotFoundError: fruit_ripeness_dl`**
   Make sure you are:
   - In the project root, and
   - Running commands via Poetry, e.g.:
@@ -432,7 +404,7 @@ This helps you quickly validate:
   poetry run data-summary
   ```
 
-- **Zip file not found when running `model-split`**  
+- **Zip file not found when running `model-split`**
   Check that:
 
   ```text
@@ -445,7 +417,7 @@ This helps you quickly validate:
   poetry run model-split --zip-path path/to/your.zip
   ```
 
-- **CUDA not being used**  
+- **CUDA not being used**
   Check:
 
   ```bash
