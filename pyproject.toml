@@ -44,3 +44,10 @@ known-first-party = ["fruit_ripeness_dl"]
 minversion = "8.0"
 addopts = "-q"
 testpaths = ["tests"]
+
+[tool.poetry.scripts]
+model-split = "scripts.model_split:main"
+run-experiment = "scripts.run_experiment:main"
+eval-test = "scripts.evaluate_test:main"
+data-summary = "scripts.data_summary:main"
+train = "scripts.train:main"

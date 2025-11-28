@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -15,9 +16,24 @@ from fruit_ripeness_dl.evaluation.metrics import (
 from fruit_ripeness_dl.models.cnn import FruitRipenessCNN
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Evaluate a trained experiment on the test set."
+    )
+    parser.add_argument(
+        "--experiment-name",
+        "-e",
+        default="exp_baseline",
+        help="Name of the experiment to evaluate (default: exp_baseline).",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = _parse_args()
+
     cfg = TrainingConfig(
-        experiment_name="exp_baseline",
+        experiment_name=args.experiment_name,
     )
 
     device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
@@ -35,6 +51,7 @@ def main() -> None:
     exp_dir = runs_dir / cfg.experiment_name
     model_path = exp_dir / "model_final.pth"
 
+    print(f"Loading model from {model_path}")
     state_dict = torch.load(model_path, map_location=device)
     model.load_state_dict(state_dict)
 
