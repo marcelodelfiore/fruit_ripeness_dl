@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import time
 
 from fruit_ripeness_dl.config import TrainingConfig
 from fruit_ripeness_dl.training.train_classifier import run_experiment as _run_experiment
@@ -45,8 +46,6 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Override device (e.g. 'cuda', 'cpu'). If not set, uses TrainingConfig default.",
     )
-
-
     parser.add_argument(
         "--optimizer",
         "-o",
@@ -60,12 +59,11 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
 
-    # Start from your config defaults and override from CLI
     cfg = TrainingConfig(
         experiment_name=args.experiment_name,
         learning_rate=args.learning_rate,
         num_epochs=args.num_epochs,
-        optimizer=args.optimizer
+        optimizer=args.optimizer,
     )
 
     if args.batch_size is not None:
@@ -86,7 +84,15 @@ def main() -> None:
         print(f"  optimizer:       {getattr(cfg, 'optimizer')}")
     print("==============================")
 
+    start = time.perf_counter()
     _run_experiment(cfg)
+    elapsed = time.perf_counter() - start
+
+    minutes, seconds = divmod(elapsed, 60)
+    print(
+        f"[train] Finished in {int(minutes)}m {seconds:04.1f}s "
+        f"({elapsed:.2f} s total)."
+    )
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import time
 
 import numpy as np
 import torch
@@ -39,6 +40,8 @@ def main() -> None:
     device = torch.device(cfg.device if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
+    start = time.perf_counter()
+
     train_loader, val_loader, test_loader = build_dataloaders(cfg)
 
     num_classes = len(train_loader.dataset.classes)
@@ -62,7 +65,6 @@ def main() -> None:
     print("Classification report (test):")
     print(report)
 
-    # Save confusion matrix to disk for notebook
     cm_path = exp_dir / "confusion_matrix.npy"
     np.save(cm_path, cm)
     print(f"Saved confusion matrix to {cm_path}")
@@ -72,6 +74,13 @@ def main() -> None:
         for name in class_names:
             f.write(name + "\n")
     print(f"Saved class names to {classes_path}")
+
+    elapsed = time.perf_counter() - start  # NEW
+    minutes, seconds = divmod(elapsed, 60)
+    print(
+        f"[eval-test] Finished in {int(minutes)}m {seconds:04.1f}s "
+        f"({elapsed:.2f} s total)."
+    )
 
 
 if __name__ == "__main__":
